@@ -2,6 +2,22 @@ const data = require('./data.json');
 let preprocessedData = require('./preprocessedData.json');
 const fs = require('fs')
 
+
+// Length of the phrase 'The Book in Three Sentences:'
+const SKIP_LENGTH = 28;
+
+// In case of scaling change to 10^6 books, assuming if a word comes more
+// than 10^4 times, it won't be used as a keyword to search a book
+const MAX_LENGTH = 25;
+
+// / In case of scaling change to 10^6 books, assuming if a word comes less
+// than 10 times, it won't be used as a keyword to search a book
+const MIN_LENGTH = 0;
+
+// Store this many items for each keyword if no of summaries having this
+// keyword is more than MAX_LENGTH
+const AVG_LENGTH = 10;
+
 // Map to store processed data
 let constructedData = {};
 
@@ -74,6 +90,18 @@ function searchNoOfOccurrences(subStr, idx) {
 
             // sort based on no. of occurrence for relevance
             constructedData[subStr].sort((a, b) => b[1] - a[1]);
+
+            // Used to optimise during up scaling
+            // Ignoring keyword which occur more than MAX_LENGTH times
+            if (constructedData[subStr].length > MAX_LENGTH) {
+                constructedData[subStr] = constructedData[subStr].splice(0, AVG_LENGTH+1);
+            }
+
+            // Used to optimise during up scaling and ignoring keywords which
+            // don't occur more than MIN_LENGTH times
+            if (constructedData[subStr].length < MIN_LENGTH) {
+                delete constructedData[subStr];
+            }
         }
     }
 }
