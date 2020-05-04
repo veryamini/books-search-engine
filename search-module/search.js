@@ -14,10 +14,39 @@ async function preprocess() {
 }
 
 /**
- * Construct preprocessed data to enable search
+ * Construct preprocessed data of words vs array of [bookId, occurrences]
  */
 function constructData() {
-
+    return new Promise ((resolve, reject) => {
+        let {summaries} = data;
+        for (let i = 0; i < summaries.length; i++) {
+            const summary = summaries[i]['summary'];
+            let word = '';
+            let j = SKIP_LENGTH+1;
+            let ch;
+            while (j < summary.length) {
+                ch = summary.charAt(j);
+                if (word === ' ') {
+                    word = '';
+                }
+                if (ch === ' ' || ch === '.' || ch === ',' || ch === '-') {
+                //    break word and search
+                    if (!constructedData[word]) {
+                        // run KMP on all summaries
+                        searchNoOfOccurrences(word, i);
+                    }
+                    word = '';
+                    j += 1;
+                    continue;
+                }
+                word += ch;
+                j += 1;
+            }
+       }
+       resolve();
+    }).catch((err) => {
+        reject(err);
+    });
 }
 
 /**
@@ -131,10 +160,140 @@ function computeLPSArray(pattern, m, lps) {
 }
 
 /**
- * 
- * @param {*} input 
- * @param {*} k 
+ * SearchSummaries searches summaries for input string and returns a list of
+ * titles 
+ * @param {String} input input string to be searched in data
+ * @param {Number} k number of titles to be returned
+ * @returns {Array} returns a list of titles where summaries include the given
+ * input string
  */
 function searchSummaries(input, k) {
+    let word = '';
+    let wordList = [];
+    let titleList = [];
+    for (let i = 0; i < input.length; i++) {
+        let ch = input.charAt(i);
+        if (ch === ' ') {
+            if (word.trim() !== '') {
+                wordList.push(word);
+            }
+            word = '';
+            continue;
+        }
+        word += ch;
+    }
+    if (word.trim() !== '') {
+        wordList.push(word);
+    }
+    titleList = findTitles(wordList, k);
+    return titleList;
+}
 
+
+/**
+ * 
+ * @param {*} wordList 
+ * @param {*} k 
+ */
+function findTitles(wordList, k) {
+    const {titles, authors, summaries} = data;
+    let bookList;
+    let bookId;
+    let book ={};
+    let titleList = [];
+    let wL = wordList.length;
+    if (wL > 1) {
+        // finding intersection of keywords using m(here wL) pointers method
+        let titleSet = new Set();
+        let indexArr = Array(wL).fill(0);
+        let dataMap = [];
+        for (let i = 0; i < wL; i++) {
+            dataMap.push(constructedData[wordList[i]]);
+            // sorted occuraances of wordList[i] based on book_id
+            dataMap[dataMap.length-1].sort((a, b) => a[0] - b[0]);
+        }
+        let arrayLimit = 0;
+        while (arrayLimit < wL && titleList.length < k) {
+            let j = 0;
+            let equal = 0;
+            let maxVal;
+            arrayLimit = 0;
+            while (j < wL-1) {
+                if (indexArr[j] === dataMap[j].length) {
+                    j++;
+                    arrayLimit += 1;
+                }
+                if (dataMap[j][indexArr[j]][0] < dataMap[j+1][indexArr[j+1]][0]) {
+                    indexArr[j] += 1;
+                    break;
+                }
+                if (dataMap[j][indexArr[j]][0] > dataMap[j+1][indexArr[j+1]][0]) {
+                    indexArr[j+1] += 1;
+                    break;
+                }
+                if (dataMap[j][indexArr[j]][0] === dataMap[j+1][indexArr[j+1]][0]) {
+                    j += 1;
+                    equal += 1;
+
+                    if (j === 1) {
+                        maxVal = dataMap[j][indexArr[j]];
+                    }
+                    else {
+                        maxVal = findMaxByRelevance(dataMap[j][indexArr[j]], dataMap[j+1][indexArr[j+1]])
+                    }
+                    indexArr[j] += 1;
+                    indexArr[j+1] += 1;
+                    if (equal === wL-1) {
+                        titleList.push(maxVal);
+                        break;
+
+                    }
+                }
+            }
+        }
+        for (let i = 0; i < k; i++) {
+            bookId = titleList[i][0];
+            book = {
+                id : bookId,
+                title: titles[bookId],
+                author: authors[bookId].author,
+                summary: summaries[bookId].summary,
+            };
+            titleList[i] = book;
+        }
+        return titleList;
+
+    }
+    else {
+        // fetching top k relevant books
+        if (constructedData[wordList[0]]) {
+            bookList = constructedData[wordList[0]];
+            for (j = 0; j < k; j++) {
+                bookId = bookList[j][0];
+                book = {
+                    id : bookId,
+                    title: titles[bookId],
+                    author: authors[bookId].author,
+                    summary: summaries[bookId].summary,
+                };
+                titleList.push(book);
+            }
+        }
+        return titleList;
+    }
+}
+
+
+/**
+ * findMaxByRelevance finds maximum of two array elements based on relevance
+ * (number of occurrences in summary)
+ * @param {Array} a array element of [book_id, ocurrence]
+ * @param {*} b array element of [book_id, ocurrence]
+ * @returns {Array} elemnt with maximum occurences
+ */
+function findMaxByRelevance(a, b) {
+    if (a[1] > b[1]) {
+        return a;
+    }
+    return b;
 }
