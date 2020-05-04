@@ -191,9 +191,10 @@ function searchSummaries(input, k) {
 
 
 /**
- * 
- * @param {*} wordList 
- * @param {*} k 
+ * findTitles searches preprocessed data basd on input strings and returns
+ * list of books
+ * @param {Array} wordList list of words in input string
+ * @param {Number} k number of books to return
  */
 function findTitles(wordList, k) {
     const {titles, authors, summaries} = data;
@@ -296,4 +297,43 @@ function findMaxByRelevance(a, b) {
         return a;
     }
     return b;
+}
+
+/**
+ * writePreprocessedData to preprocessed.json file
+ */
+async function writePreprocessedData() {
+    if (constructedData !== '') {
+        let jsonString = JSON.stringify(constructedData);
+        fs.writeFile('./preprocessedData.json', jsonString, (err) => {
+        if (err) {
+            console.log('Error writing file', err)
+        } else {
+            console.log('Successfully wrote file');
+        }
+    });
+    }
+}
+
+/**
+ * Called when need to preprocess data and write to preprocessed.json
+ */
+function main() {
+    preprocess()
+    writePreprocessedData();
+}
+
+/**
+ * findString
+ */
+function findString() {
+    if (!Object.keys(preprocessedData).length) {
+        main()
+    } else {
+        constructedData = preprocessedData;
+        console.log('achieve', searchSummaries('achieve', 3));
+        console.log( 'your',searchSummaries('your', 3));
+        console.log('you', searchSummaries('you', 3));
+        console.log('your problems', searchSummaries('your problems', 3));
+    } 
 }
