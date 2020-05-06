@@ -1,1 +1,41 @@
-@import '../../styles/main.scss'
+@import '../../styles/main.scss';
+
+.autocomplete-wrapper {
+    position: relative;
+    min-width: 300px;
+    display: flex;
+    outline: none;
+
+
+    .options-list-wrapper {
+        position: absolute;
+        top: 100%;
+        margin-top: 2px;
+        width: 100%;
+        z-index: 4;
+        box-shadow: 0 0 16px rgba(0,0,0,.28);
+        color: black;
+        background-color: #fff;
+        font-size: 1rem;
+        text-align: left;
+        .item-label {
+            cursor: pointer;
+            padding: 10px;
+            &:hover {
+                background-color: #c7c7;
+            }
+            &.active {
+                cursor: default;
+                background-color: blue;
+            }
+        }
+    }
+}
+.search-input {
+    padding: 10px;
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 1rem;;
+}
+

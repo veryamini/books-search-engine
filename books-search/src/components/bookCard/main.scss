@@ -1,0 +1,33 @@
+@import '../../styles/main.scss';
+
+
+.book-card-wrapper{
+    flex: 1;
+    min-width: 300px;
+    padding: 20px;
+    box-shadow: 0 0 16px rgba(0,0,0,.28);
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    .title-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        padding: 10px;
+        flex: 1;
+    }
+    .author {
+        padding: 20px 0 15px;
+        text-transform: uppercase;
+        font-size: 1.1rem;
+        font-weight: 300;
+        
+    }
+    .description {
+        line-height: 21px;
+        padding: 10px;
+        border-bottom: solid 1px #c7c7c7;
+        overflow: hidden;
+    }
+    
+}

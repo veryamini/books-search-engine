@@ -1,0 +1,46 @@
+@import '../../styles/main.scss';
+
+
+.header-div {
+    background-color: #282c34;
+    
+
+    .header {
+        padding: 20px;
+        font-size: 2rem;
+        font-weight: 500;
+        color: #fff;
+    }
+    .search-panel {
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        
+        .submit-btn {
+            padding: 10px;
+            border: none;
+            margin-left: 10px;
+            font-weight: 500;
+            background-color: #c7c7c7;
+            color: #282c34;
+            outline: none;
+            &.active {
+                background-color: green;
+                color: white;
+                cursor: pointer;
+            }
+        }
+    }
+}
+.book-list {
+    display: flex;
+    flex-flow: row wrap;
+    .not-selected {
+        padding: 10px;
+        font-size: 1.2rem;
+        color: #a7a7a7;
+        text-align: center;
+        width: 100%;
+    }
+}
