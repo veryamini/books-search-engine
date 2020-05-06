@@ -417,7 +417,7 @@ function searchBooks(input, k) {
  */
 function preprocessData() {
     let preprocessPromise = preprocess();
-    preprocessPromise.then(() => {
+    preprocessPromise.then((res) => {
         let writeDataPromise = writePreprocessedData();
         writeDataPromise.then(() => {
             console.log('Processing complete');
