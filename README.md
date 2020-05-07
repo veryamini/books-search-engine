@@ -7,7 +7,9 @@ Clone the repo.
 ## Run search-module on your local machine
 If you want to run search-module separately, you have to update the data.json file in /search-module/src.
 Then run the command:
+
 `cd src/`
+
 `node preprocess`
 
 The above command will preprocess your data.json file to enable search feature.
@@ -44,7 +46,8 @@ To start the server, run:
             author: 'book author',
         }
      ]
- }```
+ }
+ ```
 
  The titles, summaries and authors should have one-to-one mapping in lists, with id corresponding to the index of corresponding book title.
 
