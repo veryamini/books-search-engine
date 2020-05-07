@@ -83,3 +83,5 @@ The current implementation is for a set of 50 books, with room for scalability. 
 * If any keyword occurrs less than MIN_COUNT, we do not store them in preprocessed data.
 * Need better RAM to run code on memory
 
+## Challenges
+For challanges I faced please visit [CHALLANGES.md](./CHALLENGES.md)
