@@ -1,13 +1,13 @@
 @import '../../styles/main.scss';
 
-
 .header-div {
     background-color: #282c34;
+    box-shadow: 0 0 16px rgba(0,0,0,.28);
 
     @include mobile {
         width: 100vw;
     }
-
+    
     .header {
         padding: 20px;
         font-size: 2rem;
@@ -43,7 +43,7 @@
 .book-list {
     display: flex;
     flex-flow: row wrap;
-    overflow-y: scroll;
+    overflow-y: auto;
     .not-selected {
         padding: 10px;
         font-size: 1.2rem;
