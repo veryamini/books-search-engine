@@ -10,6 +10,15 @@
     display: flex;
     flex-direction: column;
     border-radius: 8px;
+
+    @include mobile {
+        min-width: 250px;
+        margin: 20px 15px;
+    }
+
+    &.highlight {
+        border: solid 1px blue;
+    }
     .title-name {
         font-size: 1.5rem;
         font-weight: 600;

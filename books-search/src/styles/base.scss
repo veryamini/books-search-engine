@@ -22,7 +22,7 @@ $mobile-width: 600px;
 }
 
 @mixin mobile {
-    @media (min-width: #{$tablet-width}) and (max-width: #{$desktop -1}) {
+    @media (max-width: #{$tablet-width}) {
         @content
   }
 }

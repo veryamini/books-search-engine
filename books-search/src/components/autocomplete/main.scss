@@ -6,6 +6,10 @@
     display: flex;
     outline: none;
 
+    @include mobile {
+        max-width: 250px;
+        min-width: 230px;
+    }
 
     .options-list-wrapper {
         position: absolute;

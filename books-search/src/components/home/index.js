@@ -4,44 +4,66 @@ import Autocomplete from '../autocomplete';
 import BookCard from '../bookCard';
 import './main.scss';
 
+/**
+ * Home renders book search form and book list
+ */
 class Home extends Component {
+  /**
+   * constructor initialises state
+   * @param {Object} props props received by Home
+   */
   constructor(props) {
     super(props);
     this.state = {
       selectedBook: undefined,
       bookList: [],
+      highlightId: undefined,
     };
   }
 
+  /**
+   * handleOptionChange sets selectedBook in state
+   * @param {Object} selectedBook selected book
+   */  
   handleOptionChange = (selectedBook) => {
     this.setState({
       selectedBook,
     });
   };
 
+  /**
+   * handleAddBook adds book if book is not included in bookList, otherwise
+   * highlights book
+   * @param {Object} e event object
+   */
   handleAddBook = (e) => {
     e.preventDefault();
-    e.currentTarget.reset();
     const { selectedBook, bookList } = this.state;
-    if (!bookList.includes(selectedBook)) {
+    // check if book exists in list, highligt the book and not add to list
+    let existsBook  = bookList.filter((item) => item.id === selectedBook.id);
+    if (!existsBook.length) {
       bookList.push(selectedBook);
       this.setState({
         bookList,
         selectedBook: undefined,
+        highlightId: undefined,
       });
     } else {
-      // get id and highlight the book
+      // else add to bookList
+      this.setState({
+        highlightId: existsBook[0].id,
+        selectedBook: undefined,
+      });
     }
   };
 
-  handleValueReset = (val) => {
-    this.setState({
-      resetValue: val,
-    });
-  };
-
+  /**
+   * render renders Home
+   * @returns {Node}
+   */
   render() {
-    const { bookList, selectedBook } = this.state;
+    const { bookList, selectedBook, highlightId } = this.state;
+    // creates bookHtml to list all books
     const booksHtml = bookList && bookList.length ? (
       bookList.map((book, index) => {
         return (
@@ -50,6 +72,8 @@ class Home extends Component {
             author={book.author}
             summary={book.summary}
             key={index}
+            highlightId={highlightId}
+            id={book.id}
           />
         );
       })
@@ -60,7 +84,7 @@ class Home extends Component {
     return (
       <div className="homePage">
         <div className="header-div">
-          <div className="header">Search Books</div>
+          <div className="header" data-testid="header">Search Books</div>
           <form
             className="search-panel"
             onSubmit={(e) => this.handleAddBook(e)}
@@ -75,6 +99,7 @@ class Home extends Component {
             <button
               className={`submit-btn ${selectedBook ? 'active' : ''}`}
               type="submit"
+              data-testid="submit"
               {...submitBtnProps}
             >
               Submit

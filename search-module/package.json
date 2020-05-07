@@ -1,0 +1,23 @@
+{
+  "name": "search-module",
+  "version": "0.1.0",
+  "private": true,
+  "jest": {
+    "verbose": true
+  },
+  "dependencies": {
+    "@babel/core": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "babel-jest": "^26.0.1"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^26.0.1"
+  },
+  "engines": {
+    "node": "12.16.x",
+    "npm": "6.x"
+  }
+}

@@ -1,8 +1,17 @@
 import React, { Component } from 'react';
 import debounce from 'debounce';
+import PropTypes from 'prop-types';
 import './main.scss';
 
+/**
+ * Autocomplete takes text as input as shows options based on search function
+ * provided as props
+ */
 class Autocomplete extends Component {
+  /**
+   * constructor initialises state
+   * @param {Object} props props received by Autocomplete
+   */
   constructor(props) {
     super(props);
     this.state = {
@@ -10,14 +19,19 @@ class Autocomplete extends Component {
       options: undefined,
       error: undefined,
       selectedBook: undefined,
-      showOptions: this.props.showOptions,
+      showOptions: false, // options need to be shown
+      isFocused: false, // input is focused
     };
     this.updateOptions = debounce(this.fetchOptions, 500);
   }
 
+  /**
+   * getDerivedStateFromProps updates selectedBook if the book form has been
+   * submitted
+   */
   static getDerivedStateFromProps = (props, state) => {
-    console.log(props);
-    if (props.selectedBook !== state.selectedBook) {
+    // on submit button click, reset selectedBook value and options
+    if (state.selectedBook !== undefined && props.selectedBook !== state.selectedBook.value) {
       return {
         inputVal: '',
         selectedBook: undefined,
@@ -27,30 +41,41 @@ class Autocomplete extends Component {
     return null;
   };
 
+  /**
+   * fetchOptions fetches options based on provided search function
+   */
   fetchOptions = () => {
     const { inputVal } = this.state;
-    const { k } = this.props;
+    const { k, searchFunction } = this.props;
     if (inputVal.trim() !== '') {
-      this.props
-        .searchFunction(inputVal.trim().toLowerCase(), k)
+      searchFunction(inputVal.trim().toLowerCase(), k)
         .then((options = undefined) => {
+          if (options) {
+            options = options.map((item) => {
+              return {label: item.title, value: item};
+            });
+            console.log("options: ", options)
+          }
           this.setState({
             options,
             showOptions: true,
           });
         })
         .catch((error) => {
+          // if search function gives an error, set options as undefined
           let updatedState = {
             options: undefined,
+            error: error && error.error,
           };
-          if (error.fileWritten && error.fileWritten === false) {
-            updatedState['error'] = error.error;
-          }
           this.setState(updatedState);
         });
     }
   };
 
+  /**
+   * handleInputChange sets changed input value in state and calls updateOptions
+   * @param {Object} e event object
+   */
   handleInputChange = (e) => {
     const { value } = e.target;
     let inputVal = value;
@@ -58,38 +83,60 @@ class Autocomplete extends Component {
       inputVal,
       selectedBook: undefined,
       showOptions: false,
+      isFocused: true,
     });
     this.updateOptions();
+    // if inputVal contains only spaces, set selectedBook as undefined
+    if (inputVal.trim() === '') {
+      this.props.onSelect && this.props.onSelect(undefined);
+    }
   };
 
+  /**
+   * setValue ses selected book value in state and sets showOptions to false
+   * @param {Object} selectedBook item selected
+   */
   setValue = (selectedBook) => {
     this.setState({
-      inputVal: selectedBook.title,
+      inputVal: selectedBook.value.title,
       selectedBook,
       showOptions: false,
+      isFocused: false,
     });
-    this.props.onSelect && this.props.onSelect(selectedBook);
+    // sends selected book to parent
+    this.props.onSelect && this.props.onSelect(selectedBook.value);
   };
 
-  handleFocus = (e) => {
+  /**
+   * handleFocus sets input focus  and showOptions to true
+   */
+  handleFocus = () => {
     this.setState({
       showOptions: true,
+      isFocused: true,
     });
   };
 
-  handleInputBlur = (e) => {
-    e.preventDefault();
-    console.log('event input blur: ', e.target);
-  };
+  /**
+   * handleBlur closes options and sets input focus to false in state
+   */
+  handleBlur = () => {
+    this.setState({
+      isFocused: false,
+    })
+  }
 
+  /**
+   * render renders Autocomplete
+   * @returns {Node}
+   */
   render() {
-    const { options, error, selectedBook, showOptions } = this.state;
+    const { options, error, selectedBook, showOptions, isFocused } = this.state;
     if (error) {
         alert(error);
     }
-    console.log(options);
     const optionsHtml =
-      showOptions && options ? (
+    isFocused && showOptions && options ? (
         <div
           className="options-list-wrapper"
           onClick={(e) => e.stopPropagation()}
@@ -98,12 +145,12 @@ class Autocomplete extends Component {
             return (
               <div
                 className={`item-label ${
-                  selectedBook && selectedBook.id === item.id ? 'active' : ''
+                  selectedBook && selectedBook.value.id === item.value.id ? 'active' : ''
                 }`}
-                onClick={() => this.setValue(item)}
+                onMouseDown={() => this.setValue(item)}
                 key={key}
               >
-                {item.title}
+                {item.label}
               </div>
             );
           })}
@@ -119,11 +166,19 @@ class Autocomplete extends Component {
           className="search-input"
           onChange={this.handleInputChange}
           value={this.state.inputVal || ''}
-          ref={(node) => (this.searchInput = node)}
+          onBlur={this.handleBlur}
         />
       </div>
     );
   }
 }
+
+Autocomplete.propTypes = {
+  searchFunction: PropTypes.func,
+  k: PropTypes.number,
+  defaultValue: PropTypes.string,
+  onSelect: PropTypes.func,
+  selectedBook: PropTypes.object,
+};
 
 export default Autocomplete;

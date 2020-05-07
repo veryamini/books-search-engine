@@ -1,5 +1,5 @@
-const data = require('./data.json');
-let preprocessedData = require('./preprocessedData.json');
+let data = require('./mockData.json');
+let preprocessedData = require('./mockPreprocessedData.json');
 const fsPromises = require('fs').promises;
 
 // Length of the phrase 'The Book in Three Sentences:'
@@ -256,7 +256,7 @@ async function findTitles(wordList, k) {
           let equalValFound = true;
           // index of indexArr of minimum bookId value
           let minIdx = 0;
-          // let unEqualIdx;
+
           // Searching if currIdx of all arrays in dataMap have equal value
           // if not equal assign unequalIdx
           for (let j = 0; j < maxIterations - 1; j++) {
@@ -264,7 +264,6 @@ async function findTitles(wordList, k) {
               dataMap[j][indexArr[j]][0] !== dataMap[j + 1][indexArr[j + 1]][0]
             ) {
               equalValFound = false;
-              // unEqualIdx = j+1;
               break;
             }
           }
@@ -361,7 +360,7 @@ async function writePreprocessedData() {
     if (constructedData !== '') {
       let jsonString = JSON.stringify(constructedData);
       let writingComplete = await fsPromises.writeFile(
-        './preprocessedData.json',
+        './__tests__/__mocks__/mockPreprocessedData.json',
         jsonString
       );
       return writingComplete;
@@ -405,23 +404,37 @@ function searchBooks(input, k) {
  * preprocessData processes data and writes in preprocessedData.json
  */
 function preprocessData() {
-  let preprocessPromise = preprocess();
-  preprocessPromise.then((res) => {
-    let writeDataPromise = writePreprocessedData();
-    writeDataPromise
-      .then(() => {
-        console.log('Processing complete');
-        return true;
-      })
-      .catch((error) => {
+  return new Promise ((resolve, reject) => {
+    let preprocessPromise = preprocess();
+    preprocessPromise.then((res) => {
+      let writeDataPromise = writePreprocessedData();
+      writeDataPromise
+        .then(() => {
+          console.log('Processing complete');
+          resolve({
+            response: true,
+            error: null,
+          });
+        })
+        .catch((error) => {
+          console.log('Unable to write to preprocessedData.json');
+          reject ({
+            response: false,
+            error,
+          });
+        });
+      }).catch((error) => {
         console.log('Unable to write to preprocessedData.json');
-        return {
+        reject({
           response: false,
           error,
-        };
-      });
-  });
+          fileWritten: false,
+        });
+    });
+  })
+  
 }
+
 
 module.exports = {
   searchBooks: searchBooks,

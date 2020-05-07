@@ -3,7 +3,10 @@
 
 .header-div {
     background-color: #282c34;
-    
+
+    @include mobile {
+        width: 100vw;
+    }
 
     .header {
         padding: 20px;
@@ -12,10 +15,14 @@
         color: #fff;
     }
     .search-panel {
-        padding: 10px;
+        padding: 10px 0;
         display: flex;
         justify-content: center;
         width: 100%;
+
+        @include mobile {
+            width: 100vw;
+        }
         
         .submit-btn {
             padding: 10px;
@@ -36,6 +43,7 @@
 .book-list {
     display: flex;
     flex-flow: row wrap;
+    overflow-y: scroll;
     .not-selected {
         padding: 10px;
         font-size: 1.2rem;

@@ -4,6 +4,9 @@
 books-search/node_modules
 books-search/.pnp
 books-search.pnp.js
+search-module/node_modules
+search-module/package_lock.json
+
 
 # testing
 books-search/coverage

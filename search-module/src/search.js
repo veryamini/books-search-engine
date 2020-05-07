@@ -1,4 +1,4 @@
-const data = require('./data.json');
+let data = require('./data.json');
 let preprocessedData = require('./preprocessedData.json');
 const fsPromises = require('fs').promises;
 
@@ -361,7 +361,7 @@ async function writePreprocessedData() {
     if (constructedData !== '') {
       let jsonString = JSON.stringify(constructedData);
       let writingComplete = await fsPromises.writeFile(
-        './src/search-module/preprocessedData.json',
+        './preprocessedData.json',
         jsonString
       );
       return writingComplete;
