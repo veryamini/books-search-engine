@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Home /> with no events occurred yet should match the snapshot 1`] = `"<div class=\\"homePage\\"><div class=\\"header-div\\"><div class=\\"header\\" data-testid=\\"header\\">Search Books</div><form class=\\"search-panel\\"><div class=\\"autocomplete-wrapper\\"><input class=\\"search-input\\" value=\\"\\"/></div><button class=\\"submit-btn \\" type=\\"submit\\" data-testid=\\"submit\\" disabled=\\"\\">Submit</button></form></div><div class=\\"book-list\\"><div class=\\"not-selected\\">No Books Selected</div></div></div>"`;
